@@ -2,6 +2,7 @@
 using AngEcommerceProject.Models;
 using AngEcommerceProject.Repositorys;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,13 @@ namespace AngEcommerceProject.Controllers
     {
         private readonly IOrderProductRepository _OrderProduct;
         private readonly IOrderRepository _Order;
+        private readonly UserManager<User> userManger;
 
-        public OrderController(IOrderProductRepository orderProduct , IOrderRepository order)
+        public OrderController(IOrderProductRepository orderProduct , IOrderRepository order,
+            UserManager<User> userManger)
         {
             this._Order = order;
+            this.userManger = userManger;
             this._OrderProduct = orderProduct;
         }
         [HttpGet("detail")]
@@ -30,11 +34,13 @@ namespace AngEcommerceProject.Controllers
             return Ok(result);
         }
         [HttpPost]
-        public IActionResult postOrde([FromBody]List<ProductsCartDto> list)
+        public IActionResult postOrde(string id , [FromBody]List<ProductsCartDto> list)
         {
             try
             {
+                
                 var order = new Order();
+                order.userId = id;
                 var responseMessage = new OrderMessage { IsOk = false, productsFailed = new List<string>() };
                 order = this._Order.create(order);
                 foreach (var item in list)
@@ -43,7 +49,7 @@ namespace AngEcommerceProject.Controllers
                     {
                         OrderId = order.Id,
                         ProductId = item.iD,
-                        ProductQuantity = item.iD,
+                        ProductQuantity = item.quantity,
                         ProductTotalPrice = item.price * item.quantity
 
                     };

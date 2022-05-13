@@ -65,7 +65,20 @@ namespace AngEcommerceProject.Repositorys
 
         public Order update(int id, Order item)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var order = this.GetById(id);
+                order.IsCash= true;
+                order.TotalPrice = item.TotalPrice;
+                this._context.Update(order);
+                this._context.SaveChanges();
+                return order;
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+
         }
     }
 }

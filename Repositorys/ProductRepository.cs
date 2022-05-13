@@ -95,9 +95,23 @@ namespace AngEcommerceProject.Repositorys
             }
 
             public Product update(int id, Product item)
-        {
-            throw new NotImplementedException();
-        }
+            {
+            try
+            {
+                var pro = this.GetById(id);
+                pro.categoryId = item.categoryId;
+                pro.name = item.name;
+                pro.quantity = item.quantity;
+                pro.price =item.price;
+                Context.Products.Update(pro);
+                Context.SaveChanges();
+                return pro;
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+            }
 
     }
 }

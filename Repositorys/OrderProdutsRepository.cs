@@ -31,7 +31,11 @@ namespace AngEcommerceProject.Repositorys
                     pro.quantity -= item.ProductQuantity;
                     this.productRepository.update(item.ProductId, pro);
                     this.Context.OrderProducts.Add(item);
-                    if (Context.SaveChanges() > 0)
+                    var order = this.OrderRepository.GetById(item.OrderId);
+                    order.TotalPrice += item.ProductTotalPrice;
+                    this.OrderRepository.update(item.OrderId, order);
+                    var re = Context.SaveChanges();
+                    if (re > 0)
                         return item;
                     return null;
                 }

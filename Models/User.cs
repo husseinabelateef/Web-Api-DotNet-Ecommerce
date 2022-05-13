@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace AngEcommerceProject.Models
@@ -11,7 +12,7 @@ namespace AngEcommerceProject.Models
         public string city { get; set; }
         public string Pass { get; set; }
         [JsonIgnore]
-        public virtual Order Order { get; set; }
+        public virtual ICollection<Order> Order { get; set; }
 
     }
 }
