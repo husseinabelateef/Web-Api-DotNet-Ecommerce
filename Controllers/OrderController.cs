@@ -1,7 +1,9 @@
 ﻿using AngEcommerceProject.Dto;
+using AngEcommerceProject.Models;
 using AngEcommerceProject.Repositorys;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace AngEcommerceProject.Controllers
@@ -30,8 +32,34 @@ namespace AngEcommerceProject.Controllers
         [HttpPost]
         public IActionResult postOrde([FromBody]List<ProductsCartDto> list)
         {
-            return Ok();
-        }
+            try
+            {
+                var order = new Order();
+                var responseMessage = new OrderMessage { IsOk = false, productsFailed = new List<string>() };
+                order = this._Order.create(order);
+                foreach (var item in list)
+                {
+                    var newOrPro = new OrderProducts
+                    {
+                        OrderId = order.Id,
+                        ProductId = item.iD,
+                        ProductQuantity = item.iD,
+                        ProductTotalPrice = item.price * item.quantity
+
+                    };
+                    var res = this._OrderProduct.create(newOrPro);
+                    if (res == null)
+                    {
+                        responseMessage.productsFailed.Add(item.name);
+                    }
+                }
+                return Ok(responseMessage);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            }
 
     }
 }

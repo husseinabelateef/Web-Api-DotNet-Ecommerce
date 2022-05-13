@@ -22,10 +22,25 @@ namespace AngEcommerceProject.Repositorys
         }
         public OrderProducts create(OrderProducts item)
         {
-            this.Context.OrderProducts.Add(item);
-            if (Context.SaveChanges() > 0)
-                return item;
-            return null;
+            try
+            {
+                var availableQuantity = Context.Products.Where(x => x.id == item.ProductId).Select(x => x.quantity).First();
+                if (availableQuantity >= item.ProductQuantity)
+                {
+                    var pro = this.productRepository.GetById(item.ProductId);
+                    pro.quantity -= item.ProductQuantity;
+                    this.productRepository.update(item.ProductId, pro);
+                    this.Context.OrderProducts.Add(item);
+                    if (Context.SaveChanges() > 0)
+                        return item;
+                    return null;
+                }
+                return null;
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
 
         public int delete(OrderProducts item)
